@@ -1,23 +1,14 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments
-
-from transformers import Trainer
 from transformers import LlamaForCausalLM, LlamaTokenizer, LogitsProcessorList, LlamaConfig
-
-# from graph_embeddings import data_name
 from model.trie_logists_procesor import Trie, TrieMachine, TrieLogitsProcessor
-
 from peft import PeftModel
-
 from model.collator import TestCollator
 from torch.utils.data import DataLoader
-
 import argparse
 from model.utils import *
 from model.evaluate import get_metrics_results, get_topk_results_and_logs
-
 from tqdm import tqdm
 from model.prompt import all_prompt
-
 from model.modeling_trie import AGRec
 import time
 # import optuna
@@ -29,30 +20,6 @@ def main(trial):
     parser = parse_test_args(parser)
     parser = parse_dataset_args(parser)
     args = parser.parse_args()
-
-    # # args.base_model = "meta-llama/Llama-2-7b-hf"
-    # args.base_model = "meta-llama/Llama-3.2-1B-Instruct"
-    # # args.base_model = "meta-llama/Llama-3.2-3B-Instruct"
-    # # args.base_model = "huggyllama/llama-7b"
-    # args.dataset = 'Instruments' # Instruments Beauty Yelp Arts Games
-    # args.ckpt_path = './ckpt/{}-1B/'.format(args.dataset)
-    # args.data_path = "data"
-    # args.tasks = 'seqrec'
-    # args.test_task = 'seqrec'
-    # args.index_file = '.index.json'
-    # args.filter_items = True
-    # args.test_batch_size = 1
-    # args.logging_step = 2000
-    # args.num_beams = 20
-    # alphas = {
-    #     'Instruments': 0.4,
-    #     'Arts': 0.2,
-    #     'Games': 0.7,
-    #     'Yelp': 0.7,
-    # }
-    # args.alpha = alphas[args.dataset]
-    # # args.alpha = trial.suggest_categorical("alpha", [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
-    # print('[Info] parameters: {}'.format(args))
 
     tokenizer = AutoTokenizer.from_pretrained(
         args.ckpt_path,
@@ -88,19 +55,13 @@ def main(trial):
     if args.alpha != 0:
         model.init_graph_embeddings(args.data_path + '/' + args.dataset + '/')
 
-    # # # ## ===================== ID Pattern =====================
+    # # # ## ===================== Trie LogitsProcessor to avoid ghost items =====================
     encoded_sequences = []
     for sequence in all_items:
         token_ids = tokenizer.encode(sequence)
         encoded_sequences.append(token_ids[1:])
-
     trie = TrieMachine(tokenizer.eos_token_id, encoded_sequences).getRoot()
-
-    # # customized LogitsProcessor
     logits_processor = LogitsProcessorList([TrieLogitsProcessor(trie, tokenizer, args.num_beams, last_token=':')])
-
-    # # # ## ===================== ID Pattern =====================
-    # prefix_allowed_tokens = test_data.get_prefix_allowed_tokens_fn(tokenizer)
 
     collator = TestCollator(args, tokenizer)
     test_loader = DataLoader(test_data, batch_size=args.test_batch_size, collate_fn=collator
@@ -125,10 +86,8 @@ def main(trial):
                         output = model.generate(
                             input_ids=inputs["input_ids"],
                             user_ids=inputs["user_ids"],
-                            # whole_word_ids=inputs["whole_word_ids"],
                             attention_mask=inputs["attention_mask"],
-                            max_new_tokens=4,
-                            # prefix_allowed_tokens_fn=prefix_allowed_tokens,
+                            max_new_tokens=10,
                             temperature=1,
                             num_beams=args.num_beams,
                             num_return_sequences=args.num_beams,
@@ -188,7 +147,6 @@ def main(trial):
             print("Prompt {} results: ".format(prompt_id), metrics_results)
             print("======================================================")
             print("")
-
 
     mean_results = {}
     min_results = {}

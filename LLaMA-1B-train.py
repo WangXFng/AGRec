@@ -24,26 +24,6 @@ if __name__ == "__main__":
     parser = parse_dataset_args(parser)
     args = parser.parse_args()
 
-    # args.base_model = "meta-llama/Llama-3.2-1B-Instruct"
-    # # args.base_model = "meta-llama/Llama-3.1-8B-Instruct"
-    # # args.base_model = "meta-llama/Llama-2-7b-hf"
-    # args.dataset = 'Yelp' # Instruments Beauty Yelp Arts Games
-    # args.data_path = "./data"
-    # args.tasks = 'seqrec'
-    # args.output_dir = './ckpt/{}-1B/'.format(args.dataset)
-    # args.index_file = '.index.json'
-    # args.train_prompt_sample_num = '1'
-    # args.train_data_sample_num = '0'
-    # args.epochs = 4
-    # args.learning_rate = 1e-4
-    # args.weight_decay = 0.01
-    # args.lora_r = 16
-    # args.lora_alpha = 32
-    # args.logging_step = 200
-    # args.per_device_batch_size = 16
-
-    # print('[Info] parameters: {}'.format(args))
-
     model = AGRec.from_pretrained(
             args.base_model,
             torch_dtype=torch.bfloat16,

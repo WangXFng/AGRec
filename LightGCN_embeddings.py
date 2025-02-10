@@ -6,7 +6,7 @@ data_name = ['Instruments', 'Beauty', 'Yelp', 'Games', 'Arts'][2]
 data_dir = './data/'+ data_name +'/'
 top_k = 10
 
-embedding_dict = torch.load(os.path.join(data_dir + 'embedding_dict_512.pth'))
+embedding_dict = torch.load(os.path.join(data_dir + 'embedding_dict.pth'))
 print(embedding_dict)
 user_embs = embedding_dict['user_emb'].detach()
 item_embs = embedding_dict['item_emb'].detach()
