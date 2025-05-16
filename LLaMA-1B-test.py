@@ -60,7 +60,7 @@ def main(trial):
     for sequence in all_items:
         token_ids = tokenizer.encode(sequence)
         encoded_sequences.append(token_ids[1:])
-    trie = TrieMachine(tokenizer.eos_token_id, encoded_sequences).getRoot()
+    trie = TrieMachine(tokenizer.eos_token_id, encoded_sequences).get_root_node()
     logits_processor = LogitsProcessorList([TrieLogitsProcessor(trie, tokenizer, args.num_beams, last_token=':')])
 
     collator = TestCollator(args, tokenizer)

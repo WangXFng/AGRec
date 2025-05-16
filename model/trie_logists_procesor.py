@@ -8,7 +8,7 @@ class Trie():
 class TrieMachine:
     def __init__(self, eos_token_id, sequences):
         self.eos_token_id = eos_token_id
-        self.root = Trie()  # 状态转换
+        self.root = Trie()
         self.init_trie_with_sequences(sequences)
 
     def init_trie_with_sequences(self, sequences):
@@ -20,7 +20,7 @@ class TrieMachine:
                 cur = cur.children[token]
             cur.children[self.eos_token_id] = Trie()
 
-    def getRoot(self):
+    def get_root_node(self):
         return self.root
 
 
