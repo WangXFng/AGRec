@@ -5,7 +5,6 @@ import time
 import json
 import torch
 
-#
 dataset = ['Instruments', 'Beauty', 'Yelp', 'Games', 'Arts'][2]
 data_dir = '../../data/'+ dataset +'/'
 

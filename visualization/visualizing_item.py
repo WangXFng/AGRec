@@ -26,6 +26,7 @@ special_token_2_index = {}
 new_tokens = set()
 user_traj = {}
 item_traj = {}
+
 with open(os.path.join(data_dir + dataset + ".inter.json"), 'r') as f:
     inters = json.load(f)
     f.close()
